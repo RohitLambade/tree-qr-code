@@ -8,6 +8,14 @@ This project has a **local admin app** — no coding or file-editing needed to
 add trees, generate QR codes, or print labels. Anyone at the school can run
 it on a laptop.
 
+> **This repo is already hosted and live:**
+> - Code: https://github.com/RohitLambade/tree-qr-code
+> - Site: https://rohitlambade.github.io/tree-qr-code/
+>
+> The QR codes already generated in `output/` point at that live URL, so the
+> "Hosting" section below is just for reference — you don't need to redo it
+> unless you fork this into a new repo.
+
 ## Quick start (for non-technical use)
 
 1. Install Python 3 if it isn't already installed (comes preinstalled on Mac;
