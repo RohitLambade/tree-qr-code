@@ -85,5 +85,29 @@
     ],
     "image": "",
     "location": "Central courtyard, near the assembly ground"
+  },
+  {
+    "id": "ashoka-tree",
+    "commonName": "Ashoka Tree",
+    "scientificName": "Saraca asoca",
+    "family": "Fabaceae",
+    "height": "9 m",
+    "plantedYear": "2018",
+    "conservationStatus": "Endangered (wild populations)",
+    "tagline": "A sacred tree with clusters of fragrant orange-red flowers.",
+    "description": "The Ashoka tree holds deep cultural and religious significance in India and is increasingly rare in the wild, even though it is commonly planted.",
+    "funFacts": [
+      "Flowers open yellow and turn orange-red as they age",
+      "Mentioned in classical Indian literature"
+    ],
+    "uses": [
+      "Ornamental planting",
+      "Bark used in traditional medicine"
+    ],
+    "localNames": [
+      "Hindi: Ashoka"
+    ],
+    "image": "",
+    "location": "Near the library entrance"
   }
 ]
