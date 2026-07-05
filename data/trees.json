@@ -1,0 +1,89 @@
+[
+  {
+    "id": "king-coconut-01",
+    "commonName": "King Coconut",
+    "scientificName": "Cocos nucifera var. aurantiaca",
+    "family": "Arecaceae (Palm family)",
+    "height": "18 m",
+    "plantedYear": "2012",
+    "conservationStatus": "Not Threatened",
+    "tagline": "A rare orange-husked coconut variety, prized for its extra-sweet water.",
+    "description": "Unlike the common green or yellow coconut, the King Coconut is a distinct cultivar known for its bright orange husk and naturally sweet, low-fat water. It is grown mainly for drinking rather than for copra or oil, and is considered a specialty variety in India.",
+    "funFacts": [
+      "The orange colour comes from natural pigments in the husk, not ripeness.",
+      "King Coconut water has slightly more sugar and electrolytes than regular coconut water.",
+      "A single healthy palm can produce 60-100 fruits a year.",
+      "Coconut palms can live and bear fruit for over 60 years."
+    ],
+    "uses": [
+      "Fresh drinking water (tender fruit)",
+      "Husk fibre for coir products",
+      "Leaves for thatching and weaving",
+      "Shell for handicrafts and fuel"
+    ],
+    "localNames": [
+      "Hindi: Raja Nariyal",
+      "Tamil: Sengazhi Thennai"
+    ],
+    "image": "",
+    "location": "Near the school garden gate"
+  },
+  {
+    "id": "neem-01",
+    "commonName": "Neem",
+    "scientificName": "Azadirachta indica",
+    "localNames": [
+      "Hindi: Neem",
+      "Sanskrit: Nimba"
+    ],
+    "family": "Meliaceae (Mahogany family)",
+    "height": "12 m",
+    "plantedYear": "2008",
+    "conservationStatus": "Least Concern",
+    "tagline": "Known as the 'village pharmacy' for its powerful medicinal properties.",
+    "description": "The neem tree is native to the Indian subcontinent and has been used in traditional medicine (Ayurveda) for thousands of years. Nearly every part of the tree - leaves, bark, seeds and oil - has a traditional or modern use, from skincare to natural pest control.",
+    "funFacts": [
+      "Neem oil is a natural, biodegradable pesticide used in organic farming.",
+      "Neem twigs have traditionally been used as toothbrushes (datun).",
+      "A mature neem tree can absorb a significant amount of CO2 and air pollutants.",
+      "Neem trees can survive in poor soil and drought conditions."
+    ],
+    "uses": [
+      "Traditional medicine and skincare",
+      "Natural pesticide and pest repellent",
+      "Shade tree and soil improvement",
+      "Timber for furniture"
+    ],
+    "image": "",
+    "location": "Playground boundary, east side"
+  },
+  {
+    "id": "banyan-01",
+    "commonName": "Banyan Tree",
+    "scientificName": "Ficus benghalensis",
+    "localNames": [
+      "Hindi: Bargad",
+      "Sanskrit: Vata Vriksha"
+    ],
+    "family": "Moraceae (Fig family)",
+    "height": "20 m (canopy spreading over 30 m)",
+    "plantedYear": "2001",
+    "conservationStatus": "Least Concern",
+    "tagline": "India's National Tree - a single tree can grow into an entire grove.",
+    "description": "The Banyan is famous for its aerial prop roots, which grow down from its branches and thicken into new trunks over time, allowing a single tree to spread across a huge area. It is considered sacred in Indian culture and is a symbol of longevity and shelter.",
+    "funFacts": [
+      "The Great Banyan in Kolkata's botanical garden covers over 14,000 square metres.",
+      "Banyan trees are 'strangler figs' - they often start life growing on another host tree.",
+      "The tree can live for hundreds of years.",
+      "Its dense canopy supports birds, insects, and small mammals as habitat."
+    ],
+    "uses": [
+      "Shade and shelter (community gathering point)",
+      "Habitat for birds and insects",
+      "Bark and leaves used in traditional medicine",
+      "Cultural and religious significance"
+    ],
+    "image": "",
+    "location": "Central courtyard, near the assembly ground"
+  }
+]

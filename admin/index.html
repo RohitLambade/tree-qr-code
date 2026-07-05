@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree QR Manager</title>
+<style>
+  :root {
+    --pine: #1b5e20;
+    --pine-mid: #2e7d32;
+    --pine-light: #eaf3ea;
+    --ink: #223022;
+    --muted: #62735f;
+    --line: #d9ddd2;
+    --paper: #f6f7f0;
+    --card: #ffffff;
+    --amber: #a8672b;
+    --danger: #b3392c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  header {
+    background: linear-gradient(135deg, var(--pine), var(--pine-mid));
+    color: #fff;
+    padding: 20px 24px;
+  }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: 0.9; }
+
+  .settings-bar {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 24px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .settings-bar .field { flex: 1; min-width: 220px; }
+  .settings-bar label { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
+  .settings-bar input {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; margin-top: 4px;
+  }
+  .hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+
+  main {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: minmax(320px, 460px) 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .panel h2 { margin: 0 0 4px; font-size: 16px; color: var(--pine); }
+  .panel .sub { font-size: 12.5px; color: var(--muted); margin: 0 0 16px; }
+
+  .field-row { margin-bottom: 14px; }
+  .field-row label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 4px; }
+  .field-row .req { color: var(--danger); }
+  .field-row input, .field-row textarea {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; font-family: inherit;
+  }
+  .field-row textarea { min-height: 70px; resize: vertical; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .list-field .row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .list-field .row input { flex: 1; }
+  .list-field .row button {
+    background: none; border: 1px solid var(--line); border-radius: 6px; color: var(--danger); cursor: pointer; width: 34px;
+  }
+  .add-row-btn {
+    background: none; border: 1px dashed var(--line); border-radius: 6px; color: var(--pine-mid);
+    padding: 6px 10px; font-size: 12.5px; cursor: pointer; width: 100%;
+  }
+
+  .btn {
+    border: none; border-radius: 7px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .btn-primary { background: var(--pine); color: #fff; }
+  .btn-primary:hover { background: var(--pine-mid); }
+  .btn-secondary { background: var(--pine-light); color: var(--pine); }
+  .btn-ghost { background: none; border: 1px solid var(--line); color: var(--ink); }
+  .form-actions { display: flex; gap: 10px; margin-top: 18px; }
+
+  .tree-list { display: flex; flex-direction: column; gap: 10px; }
+  .tree-card {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+  }
+  .tree-card .info .name { font-weight: 700; font-size: 15px; }
+  .tree-card .info .sci { font-style: italic; font-size: 12.5px; color: var(--muted); }
+  .tree-card .info .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Menlo, monospace; }
+  .tree-card .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .tree-card .actions button {
+    font-size: 12px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: #fff; cursor: pointer;
+  }
+  .tree-card .actions button.danger { color: var(--danger); border-color: #e6c8c2; }
+
+  .empty-state { text-align: center; color: var(--muted); padding: 30px 10px; font-size: 14px; }
+
+  .action-bar {
+    max-width: 1160px; margin: 0 auto 30px; padding: 0 24px;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  }
+  .action-bar .btn { font-size: 15px; padding: 12px 20px; }
+
+  .status {
+    max-width: 1160px; margin: 0 auto 24px; padding: 0 24px;
+  }
+  .status .box {
+    border-radius: 8px; padding: 12px 16px; font-size: 13.5px; border: 1px solid var(--line); background: var(--card);
+  }
+  .status .box.ok { border-color: #b7d9b8; background: #f1f8f1; }
+  .status .box.warn { border-color: #e4c79a; background: #fbf3e6; color: #7a5210; }
+  .status .box.error { border-color: #e6c8c2; background: #fdf1ef; color: var(--danger); }
+  .status ul { margin: 6px 0 0; padding-left: 18px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌳 Tree QR Manager</h1>
+  <p>Add tree details, generate QR codes and labels, and print — all on this computer, no internet required.</p>
+</header>
+
+<div class="settings-bar">
+  <div class="field">
+    <label for="schoolName">School name</label>
+    <input id="schoolName" type="text" placeholder="e.g. Green Valley School">
+  </div>
+  <div class="field">
+    <label for="baseUrl">Website address (once hosted)</label>
+    <input id="baseUrl" type="text" placeholder="https://yourschool.github.io/tree-qr-code">
+    <div class="hint">Leave blank for now — you can fill this in later, right before printing for real. See README for hosting steps.</div>
+  </div>
+  <button class="btn btn-secondary" onclick="saveSettings()">Save Settings</button>
+</div>
+
+<div class="status" id="statusArea"></div>
+
+<div class="action-bar">
+  <button class="btn btn-primary" onclick="generateAll()">⟳ Generate Website + QR Codes</button>
+  <button class="btn btn-ghost" onclick="window.open('/print', '_blank')">🖨 Print All Labels</button>
+  <button class="btn btn-ghost" onclick="openFolder('output')">📂 Open Labels Folder</button>
+  <button class="btn btn-ghost" onclick="openFolder('docs')">📂 Open Website Folder</button>
+</div>
+
+<main>
+  <section class="panel">
+    <h2 id="formTitle">Add a Tree</h2>
+    <p class="sub">Fields marked <span class="req">*</span> are required. Everything else can be filled in later.</p>
+    <form id="treeForm" onsubmit="return submitTree(event)">
+      <div class="field-row">
+        <label>Common name <span class="req">*</span></label>
+        <input id="commonName" type="text" placeholder="e.g. King Coconut" required>
+      </div>
+      <div class="field-row">
+        <label>Scientific name <span class="req">*</span></label>
+        <input id="scientificName" type="text" placeholder="e.g. Cocos nucifera var. aurantiaca" required>
+      </div>
+      <div class="field-row">
+        <label>Tagline — what makes it special (one line)</label>
+        <input id="tagline" type="text" placeholder="e.g. A rare orange-husked coconut variety...">
+      </div>
+      <div class="grid-2">
+        <div class="field-row">
+          <label>Family</label>
+          <input id="family" type="text" placeholder="e.g. Arecaceae">
+        </div>
+        <div class="field-row">
+          <label>Height</label>
+          <input id="height" type="text" placeholder="e.g. 18 m">
+        </div>
+        <div class="field-row">
+          <label>Planted year</label>
+          <input id="plantedYear" type="text" placeholder="e.g. 2012">
+        </div>
+        <div class="field-row">
+          <label>Conservation status</label>
+          <input id="conservationStatus" type="text" placeholder="e.g. Not Threatened">
+        </div>
+      </div>
+      <div class="field-row">
+        <label>Description</label>
+        <textarea id="description" placeholder="A short paragraph about this tree..."></textarea>
+      </div>
+
+      <div class="field-row list-field" id="localNamesField">
+        <label>Local names</label>
+        <div class="rows"></div>
+        <button type="button" class="add-row-btn" onclick="addRow('localNamesField', 'e.g. Hindi: Nariyal')">+ Add local name</button>
+      </div>
+
+      <div class="field-row list-field" id="funFactsField">
+        <label>Fun facts</label>
+        <div class="rows"></div>
+        <button type="button" class="add-row-btn" onclick="addRow('funFactsField', 'e.g. Produces 60-100 fruits a year')">+ Add fun fact</button>
+      </div>
+
+      <div class="field-row list-field" id="usesField">
+        <label>Uses &amp; benefits</label>
+        <div class="rows"></div>
+        <button type="button" class="add-row-btn" onclick="addRow('usesField', 'e.g. Fresh drinking water')">+ Add use</button>
+      </div>
+
+      <div class="field-row">
+        <label>Photo URL (optional)</label>
+        <input id="image" type="text" placeholder="Paste a link to a photo, or leave blank">
+      </div>
+      <div class="field-row">
+        <label>Location on campus (optional)</label>
+        <input id="location" type="text" placeholder="e.g. Near the school garden gate">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="saveBtn">Save Tree</button>
+        <button type="button" class="btn btn-ghost hidden" id="cancelBtn" onclick="resetForm()">Cancel Edit</button>
+      </div>
+    </form>
+  </section>
+
+  <section>
+    <div class="panel" style="margin-bottom:14px;">
+      <h2>Your Trees</h2>
+      <p class="sub">Every tree you add appears here. Generate the website + QR codes whenever you've made changes.</p>
+    </div>
+    <div class="tree-list" id="treeList"></div>
+  </section>
+</main>
+
+<script>
+  let trees = [];
+  let editingId = null;
+  const LIST_FIELDS = ['localNamesField', 'funFactsField', 'usesField'];
+
+  function addRow(fieldId, placeholder, value) {
+    const rows = document.querySelector('#' + fieldId + ' .rows');
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `<input type="text" placeholder="${placeholder}" value="${value ? escapeAttr(value) : ''}">
+      <button type="button" onclick="this.parentElement.remove()">✕</button>`;
+    rows.appendChild(row);
+  }
+
+  function escapeAttr(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  }
+
+  function collectList(fieldId) {
+    return Array.from(document.querySelectorAll('#' + fieldId + ' .rows input'))
+      .map(i => i.value.trim())
+      .filter(Boolean);
+  }
+
+  function clearLists() {
+    LIST_FIELDS.forEach(id => document.querySelector('#' + id + ' .rows').innerHTML = '');
+  }
+
+  async function loadConfig() {
+    const res = await fetch('/api/config');
+    const config = await res.json();
+    document.getElementById('schoolName').value = config.schoolName || '';
+    document.getElementById('baseUrl').value = config.baseUrl || '';
+  }
+
+  async function saveSettings() {
+    const body = {
+      schoolName: document.getElementById('schoolName').value.trim(),
+      baseUrl: document.getElementById('baseUrl').value.trim(),
+    };
+    await fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    showStatus('ok', 'Settings saved.');
+  }
+
+  async function loadTrees() {
+    const res = await fetch('/api/trees');
+    trees = await res.json();
+    renderTreeList();
+  }
+
+  function renderTreeList() {
+    const list = document.getElementById('treeList');
+    if (!trees.length) {
+      list.innerHTML = '<div class="empty-state">No trees yet — add your first one on the left.</div>';
+      return;
+    }
+    list.innerHTML = trees.map(t => `
+      <div class="tree-card">
+        <div class="info">
+          <div class="name">${escapeHtml(t.commonName)}</div>
+          <div class="sci">${escapeHtml(t.scientificName)}</div>
+          <div class="id">${escapeHtml(t.id)}</div>
+        </div>
+        <div class="actions">
+          <button onclick="window.open('/site/${encodeURIComponent(t.id)}.html','_blank')">Preview</button>
+          <button onclick="window.open('/print/${encodeURIComponent(t.id)}','_blank')">Print</button>
+          <button onclick="editTree('${escapeAttr(t.id)}')">Edit</button>
+          <button class="danger" onclick="deleteTree('${escapeAttr(t.id)}')">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function editTree(id) {
+    const tree = trees.find(t => t.id === id);
+    if (!tree) return;
+    editingId = id;
+    document.getElementById('formTitle').textContent = 'Editing: ' + tree.commonName;
+    document.getElementById('commonName').value = tree.commonName || '';
+    document.getElementById('scientificName').value = tree.scientificName || '';
+    document.getElementById('tagline').value = tree.tagline || '';
+    document.getElementById('family').value = tree.family || '';
+    document.getElementById('height').value = tree.height || '';
+    document.getElementById('plantedYear').value = tree.plantedYear || '';
+    document.getElementById('conservationStatus').value = tree.conservationStatus || '';
+    document.getElementById('description').value = tree.description || '';
+    document.getElementById('image').value = tree.image || '';
+    document.getElementById('location').value = tree.location || '';
+    clearLists();
+    (tree.localNames || []).forEach(v => addRow('localNamesField', 'e.g. Hindi: Nariyal', v));
+    (tree.funFacts || []).forEach(v => addRow('funFactsField', 'e.g. Produces 60-100 fruits a year', v));
+    (tree.uses || []).forEach(v => addRow('usesField', 'e.g. Fresh drinking water', v));
+    document.getElementById('saveBtn').textContent = 'Save Changes';
+    document.getElementById('cancelBtn').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetForm() {
+    editingId = null;
+    document.getElementById('treeForm').reset();
+    clearLists();
+    document.getElementById('formTitle').textContent = 'Add a Tree';
+    document.getElementById('saveBtn').textContent = 'Save Tree';
+    document.getElementById('cancelBtn').classList.add('hidden');
+  }
+
+  async function submitTree(evt) {
+    evt.preventDefault();
+    const body = {
+      commonName: document.getElementById('commonName').value.trim(),
+      scientificName: document.getElementById('scientificName').value.trim(),
+      tagline: document.getElementById('tagline').value.trim(),
+      family: document.getElementById('family').value.trim(),
+      height: document.getElementById('height').value.trim(),
+      plantedYear: document.getElementById('plantedYear').value.trim(),
+      conservationStatus: document.getElementById('conservationStatus').value.trim(),
+      description: document.getElementById('description').value.trim(),
+      localNames: collectList('localNamesField'),
+      funFacts: collectList('funFactsField'),
+      uses: collectList('usesField'),
+      image: document.getElementById('image').value.trim(),
+      location: document.getElementById('location').value.trim(),
+    };
+
+    const url = editingId ? '/api/trees/' + encodeURIComponent(editingId) : '/api/trees';
+    const method = editingId ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showStatus('error', data.error || 'Something went wrong saving this tree.');
+      return false;
+    }
+
+    showStatus('ok', `Saved "${data.commonName}". Click "Generate Website + QR Codes" when you're ready to update the printed labels.`);
+    resetForm();
+    await loadTrees();
+    return false;
+  }
+
+  async function deleteTree(id) {
+    const tree = trees.find(t => t.id === id);
+    if (!confirm(`Delete "${tree ? tree.commonName : id}"? This can't be undone.`)) return;
+    const res = await fetch('/api/trees/' + encodeURIComponent(id), { method: 'DELETE' });
+    if (res.ok) {
+      showStatus('ok', 'Tree deleted. Regenerate the website + QR codes to fully remove its page.');
+      await loadTrees();
+    }
+  }
+
+  async function generateAll() {
+    showStatus('ok', 'Generating website and QR codes...');
+    const res = await fetch('/api/generate', { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) {
+      showStatus('error', data.error || 'Generation failed.');
+      return;
+    }
+    let type = 'ok';
+    let message = `Done — built ${data.builtPages.length} page(s) and ${data.qrResults.length} QR code(s) + label(s).`;
+    if (data.usingPlaceholderUrl) {
+      type = 'warn';
+      message += ' No website address is set yet, so QR codes won\'t work until you host the site and fill in "Website address" above.';
+    }
+    showStatus(type, message);
+  }
+
+  async function openFolder(which) {
+    await fetch('/open/' + which);
+  }
+
+  function showStatus(type, message) {
+    document.getElementById('statusArea').innerHTML = `<div class="box ${type}">${escapeHtml(message)}</div>`;
+  }
+
+  (async function init() {
+    addRow('localNamesField', 'e.g. Hindi: Nariyal');
+    addRow('funFactsField', 'e.g. Produces 60-100 fruits a year');
+    addRow('usesField', 'e.g. Fresh drinking water');
+    await loadConfig();
+    await loadTrees();
+  })();
+</script>
+</body>
+</html>
