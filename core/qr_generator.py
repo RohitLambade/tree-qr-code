@@ -118,6 +118,12 @@ def generate(trees, base_url):
     qr_dir.mkdir(parents=True, exist_ok=True)
     label_dir.mkdir(parents=True, exist_ok=True)
 
+    current_files = {f"{tree['id']}.png" for tree in trees}
+    for stale_dir in (qr_dir, label_dir):
+        for stale in stale_dir.glob("*.png"):
+            if stale.name not in current_files:
+                stale.unlink()
+
     results = []
     labels = []
     for tree in trees:

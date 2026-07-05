@@ -23,7 +23,7 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-from core import qr_generator, site_builder, store  # noqa: E402
+from core import publisher, qr_generator, site_builder, store  # noqa: E402
 
 HOST = "127.0.0.1"  # localhost only — this admin tool is not exposed to the school network
 PORT = 8877
@@ -271,10 +271,20 @@ class Handler(BaseHTTPRequestHandler):
             config = store.load_config()
             built = site_builder.build(trees, config["schoolName"])
             qr_results = qr_generator.generate(trees, config["baseUrl"])
+
+            publish_result = None
+            publish_error = None
+            try:
+                publish_result = publisher.publish()
+            except Exception as e:
+                publish_error = str(e)
+
             self.send_json({
                 "builtPages": built,
                 "qrResults": qr_results,
                 "usingPlaceholderUrl": not bool(config["baseUrl"]),
+                "publish": publish_result,
+                "publishError": publish_error,
             })
         except Exception as e:
             self.error_json(str(e), 500)

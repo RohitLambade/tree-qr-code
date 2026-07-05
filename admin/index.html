@@ -156,7 +156,7 @@
 <div class="status" id="statusArea"></div>
 
 <div class="action-bar">
-  <button class="btn btn-primary" onclick="generateAll()">⟳ Generate Website + QR Codes</button>
+  <button class="btn btn-primary" id="generateBtn" onclick="generateAll()">⟳ Generate + Publish to Website</button>
   <button class="btn btn-ghost" onclick="window.open('/print', '_blank')">🖨 Print All Labels</button>
   <button class="btn btn-ghost" onclick="openFolder('output')">📂 Open Labels Folder</button>
   <button class="btn btn-ghost" onclick="openFolder('docs')">📂 Open Website Folder</button>
@@ -383,7 +383,7 @@
       return false;
     }
 
-    showStatus('ok', `Saved "${data.commonName}". Click "Generate Website + QR Codes" when you're ready to update the printed labels.`);
+    showStatus('ok', `Saved "${data.commonName}". Click "Generate + Publish to Website" to make it live and update the printed labels.`);
     resetForm();
     await loadTrees();
     return false;
@@ -394,26 +394,43 @@
     if (!confirm(`Delete "${tree ? tree.commonName : id}"? This can't be undone.`)) return;
     const res = await fetch('/api/trees/' + encodeURIComponent(id), { method: 'DELETE' });
     if (res.ok) {
-      showStatus('ok', 'Tree deleted. Regenerate the website + QR codes to fully remove its page.');
+      showStatus('ok', 'Tree deleted. Click "Generate + Publish to Website" to remove its page from the live site too.');
       await loadTrees();
     }
   }
 
   async function generateAll() {
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    btn.textContent = '⟳ Working...';
     showStatus('ok', 'Generating website and QR codes...');
-    const res = await fetch('/api/generate', { method: 'POST' });
-    const data = await res.json();
-    if (!res.ok) {
-      showStatus('error', data.error || 'Generation failed.');
-      return;
+    try {
+      const res = await fetch('/api/generate', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        showStatus('error', data.error || 'Generation failed.');
+        return;
+      }
+      let type = 'ok';
+      let message = `Done — built ${data.builtPages.length} page(s) and ${data.qrResults.length} QR code(s) + label(s).`;
+      if (data.usingPlaceholderUrl) {
+        type = 'warn';
+        message += ' No website address is set yet, so QR codes won\'t work until you host the site and fill in "Website address" above.';
+      }
+
+      if (data.publishError) {
+        type = 'error';
+        message += ` Publishing to GitHub failed: ${data.publishError}`;
+      } else if (data.publish && data.publish.skipped) {
+        message += ` (${data.publish.reason})`;
+      } else if (data.publish && data.publish.pushed) {
+        message += ' Published to GitHub — the live site usually updates within about a minute.';
+      }
+      showStatus(type, message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '⟳ Generate + Publish to Website';
     }
-    let type = 'ok';
-    let message = `Done — built ${data.builtPages.length} page(s) and ${data.qrResults.length} QR code(s) + label(s).`;
-    if (data.usingPlaceholderUrl) {
-      type = 'warn';
-      message += ' No website address is set yet, so QR codes won\'t work until you host the site and fill in "Website address" above.';
-    }
-    showStatus(type, message);
   }
 
   async function openFolder(which) {

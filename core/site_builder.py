@@ -112,10 +112,17 @@ def render_index_page(trees, school_name):
 
 
 def build(trees, school_name):
-    """Writes docs/<id>.html for every tree plus docs/index.html.
+    """Writes docs/<id>.html for every tree plus docs/index.html, and
+    removes any leftover page for a tree that no longer exists (e.g.
+    after a delete), so removed trees stop being publicly reachable.
     Returns the list of relative paths written."""
     template = TEMPLATE_FILE.read_text()
     OUTPUT_DIR.mkdir(exist_ok=True)
+
+    current_files = {f"{tree['id']}.html" for tree in trees}
+    for stale in OUTPUT_DIR.glob("*.html"):
+        if stale.name != "index.html" and stale.name not in current_files:
+            stale.unlink()
 
     written = []
     for tree in trees:

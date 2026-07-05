@@ -8,13 +8,33 @@ This project has a **local admin app** — no coding or file-editing needed to
 add trees, generate QR codes, or print labels. Anyone at the school can run
 it on a laptop.
 
-> **This repo is already hosted and live:**
+> **This repo is already hosted, live, and set up to auto-publish:**
 > - Code: https://github.com/RohitLambade/tree-qr-code
 > - Site: https://rohitlambade.github.io/tree-qr-code/
 >
-> The QR codes already generated in `output/` point at that live URL, so the
-> "Hosting" section below is just for reference — you don't need to redo it
-> unless you fork this into a new repo.
+> The QR codes already generated in `output/` point at that live URL, and
+> clicking **Generate + Publish to Website** in the app pushes changes to
+> GitHub automatically (see below). The "Hosting" section further down is
+> just for reference — you don't need to redo it unless you fork this into a
+> new repo.
+
+## Adding a tree updates the live site automatically
+
+Clicking **Generate + Publish to Website** does everything in one step:
+rebuilds every tree's page, regenerates QR codes/labels, **and** commits +
+pushes the changes to GitHub — no `git add` / `commit` / `push` needed, ever.
+GitHub Pages then rebuilds the live site automatically (usually live within
+about a minute). Deleting a tree works the same way: its page and QR/label
+files are removed automatically on the next click, so it stops being
+reachable once you publish.
+
+This only works because git is already authenticated on this computer (done
+once, via `gh auth login`, when this repo was first set up). **If you move
+this project to a different computer** (e.g. the school's own machine), you
+need to repeat that one-time step there — clone the repo, run
+`gh auth login` once, and from then on the button handles everything. If git
+isn't authenticated, the button still generates everything locally and shows
+you the reason publishing was skipped.
 
 ## Quick start (for non-technical use)
 
@@ -35,16 +55,17 @@ it on a laptop.
 4. In the browser page:
    - Fill in the **Add a Tree** form and click **Save Tree**. Repeat for each
      tree. Click **Edit** or **Delete** on any tree card to change it later.
-   - Click **Generate Website + QR Codes** whenever you've added or changed
-     trees.
+   - Click **Generate + Publish to Website** whenever you've added or changed
+     trees — this updates the pages, QR codes, and labels, and pushes the
+     update live automatically (see below).
    - Click **Print All Labels** (or **Print** on a single tree) to open a
      print-ready page and send it straight to your printer.
    - Use **Open Labels Folder** / **Open Website Folder** to browse the
      generated files directly.
 
-Everything — adding trees, generating QR codes, printing — runs entirely on
-that one computer. No internet connection is needed to use the admin app
-itself.
+Adding trees, generating QR codes, and printing all run entirely on that one
+computer without internet. Publishing the update live does need an internet
+connection (see the auto-publish note above).
 
 ## The one thing that does need the internet: hosting
 
@@ -65,11 +86,11 @@ one-time setup, typically done once by whoever is comfortable with it:
 3. Netlify gives you a live URL instantly.
 
 Once you have that URL, paste it into **Website address** at the top of the
-Tree QR Manager page and click **Save Settings**, then **Generate Website +
-QR Codes** again so the QR codes point to the real, live pages. Whenever you
-add or edit a tree afterward, re-upload/push the `docs` folder — **the QR
+Tree QR Manager page and click **Save Settings**, then **Generate + Publish
+to Website** again so the QR codes point to the real, live pages. Whenever
+you add or edit a tree afterward, just click that same button — **the QR
 codes themselves never need to change or be reprinted**, since they always
-point to the same URLs.
+point to the same URLs, and their content updates automatically.
 
 ## Printing and mounting on the tree
 
@@ -117,8 +138,8 @@ python3 scripts/generate_qr.py --base-url https://your-url-here   # data/trees.j
 Project layout:
 - `data/trees.json` — the tree database (edited by the app, or by hand).
 - `data/config.json` — school name + hosting URL (edited by the app).
-- `core/` — shared logic (site building, QR/label generation, data storage)
-  used by both `app.py` and the CLI scripts.
+- `core/` — shared logic (site building, QR/label generation, data storage,
+  and git publishing) used by both `app.py` and the CLI scripts.
 - `templates/tree_page_template.html` — the HTML template for a tree's page.
 - `docs/` — generated static website (host this folder).
 - `output/` — generated QR codes, labels, and print-ready PDF.
